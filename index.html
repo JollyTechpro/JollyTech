@@ -4,23 +4,29 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>JollyTech — AI Products Ecosystem</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./assets/css/style.css">
-  <meta name="description" content="JollyTech — JollyBots, JollyWorld, JollyShare. AI trading bots, virtual world, shared internet with rewards.">
+  <meta name="description" content="JollyTech — JollyBots (AI trading), JollyWorld (virtual world), JollyShare (shared internet with rewards).">
+  <link rel="icon" href="/assets/img/logo.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/assets/css/style.css"/>
+  <meta property="og:title" content="JollyTech — AI Products Ecosystem">
+  <meta property="og:description" content="AI trading bots, virtual world with voice, and shared internet with rewards.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.jollytech.pro/">
 </head>
 <body>
-  <header class="container header">
-    <div class="brand">
-      <img src="./assets/img/logo.png" alt="JollyTech" onerror="this.style.display='none'">
+  <header class="site-header container">
+    <a class="brand" href="/">
+      <img class="logo" src="/assets/img/logo.svg" alt="JollyTech" />
       <strong>JollyTech</strong>
-    </div>
+    </a>
     <nav class="nav">
-      <a href="./apps/jollybots/">JollyBots</a>
-      <a href="./apps/jollyshare/">JollyShare</a>
-      <a href="./apps/jollyworld/">JollyWorld</a>
+      <a href="/apps/jollybots/">JollyBots</a>
+      <a href="/apps/jollyshare/">JollyShare</a>
+      <a href="/apps/jollyworld/">JollyWorld</a>
     </nav>
+    <button class="menu" aria-label="Menu" onclick="toggleMenu()">☰</button>
   </header>
 
   <main class="container grid">
@@ -28,24 +34,24 @@
       <h1>AI products that feel professional from day one</h1>
       <p class="muted">SaaS trading bots, a virtual world with voice-first AI, and a community-powered internet.</p>
       <div class="cta">
-        <a class="btn" href="./apps/jollybots/">Open JollyBots</a>
-        <a class="link" href="https://github.com/JollyTechpro/JollyTech">View code →</a>
+        <a class="btn" href="/apps/jollybots/">Open JollyBots</a>
+        <a class="link" href="https://github.com/JollyTechpro/JollyTech" target="_blank" rel="noopener">View code →</a>
       </div>
     </section>
 
-    <a class="card card-link" href="./apps/jollybots/">
+    <a class="card card-link" href="/apps/jollybots/">
       <h3>JollyBots</h3>
       <p class="muted">AI trading bots (Binance, Alpaca). Dashboard, status, charts, Stripe.</p>
       <span class="arrow">Open →</span>
     </a>
 
-    <a class="card card-link" href="./apps/jollyshare/">
+    <a class="card card-link" href="/apps/jollyshare/">
       <h3>JollyShare</h3>
       <p class="muted">Share your internet and earn rewards. Simple, global, secure.</p>
       <span class="arrow">Open →</span>
     </a>
 
-    <a class="card card-link" href="./apps/jollyworld/">
+    <a class="card card-link" href="/apps/jollyworld/">
       <h3>JollyWorld</h3>
       <p class="muted">Virtual world with voice comms, AI NPCs, professions & economy.</p>
       <span class="arrow">Open →</span>
@@ -54,7 +60,9 @@
 
   <footer class="container footer">
     <span>© 2025 JollyTech — All Rights Reserved</span>
-    <a href="https://github.com/JollyTechpro/JollyTech">GitHub</a>
+    <a href="https://github.com/JollyTechpro/JollyTech" target="_blank" rel="noopener">GitHub</a>
   </footer>
+
+  <script src="/assets/js/main.js"></script>
 </body>
 </html>
