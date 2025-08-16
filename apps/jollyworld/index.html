@@ -1,36 +1,28 @@
 <!doctype html>
-<html lang="en">
+<html lang="bg">
 <head>
-<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>JollyWorld — Virtual World</title>
-<style>
-  :root{--bg:#0a0f16;--panel:#0f1725;--accent:#27f39a;--muted:#9fb3a7}
-  body{margin:0;background:var(--bg);color:#e7f3ec;font:16px/1.5 system-ui,Inter,Arial}
-  header{display:flex;gap:16px;align-items:center;padding:16px 22px;border-bottom:1px solid #1b2532}
-  a{color:var(--accent);text-decoration:none}
-  .grid{max-width:1100px;margin:0 auto;padding:22px;display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
-  .card{background:var(--panel);border:1px solid #1b2532;border-radius:16px;padding:16px}
-  .muted{color:var(--muted)}
-</style>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>The JollyWorld — Виртуален свят</title>
+  <link rel="icon" href="/assets/img/logo.png" type="image/png">
+  <link rel="stylesheet" href="/assets/css/style.css"/>
 </head>
 <body>
-<header>
-  <strong>JollyWorld</strong>
-  <nav><a href="/">JollyTech Home</a></nav>
-</header>
-<main class="grid">
-  <div class="card">
-    <h3>Voice-first</h3>
-    <p class="muted">Real-time voice between players & AI NPCs.</p>
-  </div>
-  <div class="card">
-    <h3>In-world calls</h3>
-    <p class="muted">Virtual telephony powered by WebRTC.</p>
-  </div>
-  <div class="card">
-    <h3>Economy</h3>
-    <p class="muted">Professions, trading and social systems.</p>
-  </div>
-</main>
+  <header class="site-header container">
+    <a class="brand" href="/"><img class="logo" src="/assets/img/logo.png"/> JollyTech</a>
+    <nav class="nav">
+      <a href="/">Начало</a>
+      <a href="/apps/jollyshare/">JollyShare</a>
+      <a href="/apps/jollyworld/">JollyWorld</a>
+      <a href="/apps/jollybots/">JollyBots</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <h1>The JollyWorld</h1>
+    <p>Виртуален свят с гласова комуникация, AI NPC-та, професии и икономика.</p>
+  </main>
+
+  <footer class="container footer">© 2025 JollyTech</footer>
 </body>
 </html>
