@@ -4,23 +4,22 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title data-i18n="meta.title">JollyTech — Технологии за бъдещето</title>
-  <meta name="description" data-i18n="meta.desc" content="JollyTech изгражда екосистема от продукти: JollyShare (споделен интернет и награди), The JollyWorld (виртуален свят) и JollyBots (AI ботове за търговия). Професионално, сигурно и лесно за всеки.">
-  <link rel="canonical" href="https://jollytech.pro/">
-  <link rel="icon" href="/favicon.ico">
-  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
-  <meta property="og:title" data-i18n="meta.title" content="JollyTech — Технологии за бъдещето">
-  <meta property="og:description" data-i18n="meta.desc" content="Екосистема: JollyShare, The JollyWorld, JollyBots. Реални продукти, реална стойност.">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://jollytech.pro/">
-  <meta property="og:image" content="https://jollytech.pro/og.jpg">
-  <meta name="twitter:card" content="summary_large_image">
+  <meta name="description" data-i18n="meta.desc" content="JollyTech изгражда екосистема от продукти: JollyShare (споделен интернет и награди), The JollyWorld (виртуален свят) и JollyBots (AI ботове за търговия). Професионално, сигурно и лесно за всеки."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet" />
   <style>
-    /* --- ТВОЯТ CSS без промени --- */
-    :root{--bg:#0b1118;--panel:#101827;--panel2:#0d1622;--border:#1b2532;--text:#e9edf2;--muted:#98a2ad;--accent:#25e2b9;--accent2:#18c7a3;--ring:rgba(37,226,185,.25);--shadow:rgba(0,0,0,.35);--focus:#3bd5ff}
-    *{box-sizing:border-box}html,body{margin:0}body{font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
-    a{text-decoration:none;color:inherit}.container{max-width:1160px;margin:0 auto;padding:0 22px}
+    /* Твоят CSS – 1:1 от подадения index */
+    :root{
+      --bg:#0b1118; --panel:#101827; --panel2:#0d1622;
+      --border:#1b2532; --text:#e9edf2; --muted:#98a2ad;
+      --accent:#25e2b9; --accent2:#18c7a3; --ring:rgba(37,226,185,.25);
+      --shadow:rgba(0,0,0,.35); --focus:#3bd5ff
+    }
+    *{box-sizing:border-box}html,body{margin:0}
+    body{font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+    a{text-decoration:none;color:inherit}
+    .container{max-width:1160px;margin:0 auto;padding:0 22px}
     .nav{position:sticky;top:0;z-index:40;background:rgba(8,12,18,.65);backdrop-filter:blur(10px) saturate(140%);border-bottom:1px solid var(--border)}
     .nav__row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 0}
     .brand{display:flex;align-items:center;gap:10px;font-weight:900;letter-spacing:.2px}
@@ -31,19 +30,12 @@
     .btn:hover{transform:translateY(-1px)}.btn:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
     .btn--primary{background:var(--accent);color:#0a1118;box-shadow:0 10px 30px rgba(37,226,185,.25)}.btn--primary:hover{background:var(--accent2)}
     .btn--ghost{border-color:var(--border);color:#e8eaee;background:transparent}.btn--ghost:hover{background:#121a25}
-    .hamb{display:none;background:none;border:1px solid var(--border);padding:8px;border-radius:10px}
-    .hamb span{display:block;width:22px;height:2px;background:#cfd6de;margin:4px 0}
-    .lang{display:flex;align-items:center;gap:8px}.lang label{font-size:14px}
-    .lang select{background:transparent;color:#cfd6de;border:1px solid var(--border);border-radius:10px;padding:8px 10px;cursor:pointer}
-    .hero{position:relative;overflow:hidden;padding:96px 0}.hero__content{text-align:center}
-    .hero h1{font-size:48px;line-height:1.08;margin:0}.accent{color:var(--accent)}.sub{margin:12px auto 0;color:var(--muted);max-width:720px}
+    .lang{display:flex;align-items:center;gap:8px}.lang select{background:transparent;color:#cfd6de;border:1px solid var(--border);border-radius:10px;padding:6px 10px;cursor:pointer}
+    .hero{padding:96px 0;text-align:center}
+    .hero h1{font-size:48px;line-height:1.08;margin:0}.accent{color:var(--accent)}
+    .sub{margin:12px auto 0;color:var(--muted);max-width:720px}
     .cta{margin-top:22px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
-    .hero__chips{margin-top:22px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
-    .hero__chips span{font-size:12px;color:#b8c1cc;background:rgba(255,255,255,.04);border:1px solid var(--border);padding:6px 10px;border-radius:999px}
-    .section{padding:78px 0;border-top:1px solid var(--border);background:var(--panel2)}.section--alt{background:var(--panel)}
-    .features{display:grid;gap:20px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));margin-top:26px}
-    .feature{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:16px;padding:20px}
-    .projects{display:grid;gap:22px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));margin-top:26px}
+    .section{padding:78px 0;border-top:1px solid var(--border);background:var(--panel2)}
     .footer{border-top:1px solid var(--border);background:#0a1117}
     .footer__row{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:24px 0;flex-wrap:wrap}
     .copy{text-align:center;color:#8e97a3;padding:14px 0;border-top:1px solid var(--border)}
@@ -64,11 +56,16 @@
       </nav>
       <div class="actions">
         <div class="lang">
-          <label for="lang" data-i18n="lang.label">Език</label>
           <select id="lang">
             <option value="bg">BG</option>
             <option value="en">EN</option>
             <option value="de">DE</option>
+            <option value="es">ES</option>
+            <option value="ru">RU</option>
+            <option value="tr">TR</option>
+            <option value="ro">RO</option>
+            <option value="fr">FR</option>
+            <option value="cz">CZ</option>
           </select>
         </div>
       </div>
@@ -110,19 +107,29 @@
 
   <script>
     const I18N = {
-      bg: { "meta.title":"JollyTech — Технологии за бъдещето","meta.desc":"JollyTech изгражда екосистема...","brand":"JollyTech","nav.about":"За нас","nav.ecosystem":"Екосистема","nav.share":"JollyShare","nav.world":"The JollyWorld","nav.bots":"JollyBots","nav.contact":"Контакт","lang.label":"Език","hero.title":"JollyTech — технологии за <span class='accent'>бъдещето</span>","hero.subtitle":"Интелигентни ботове...","hero.ctaPrimary":"Виж екосистемата","hero.ctaSecondary":"Научи повече","about.title":"За JollyTech","about.lead":"Създаваме екосистема...","footer.terms":"Условия","footer.privacy":"Поверителност","footer.status":"Статус","footer.copy":"© 2025 JollyTech. Всички права запазени."},
-      en: { "meta.title":"JollyTech — Technologies for the Future","meta.desc":"JollyTech builds an ecosystem...","brand":"JollyTech","nav.about":"About","nav.ecosystem":"Ecosystem","nav.share":"JollyShare","nav.world":"The JollyWorld","nav.bots":"JollyBots","nav.contact":"Contact","lang.label":"Language","hero.title":"JollyTech — technologies for the <span class='accent'>future</span>","hero.subtitle":"Intelligent bots, platforms...","hero.ctaPrimary":"Explore the ecosystem","hero.ctaSecondary":"Learn more","about.title":"About JollyTech","about.lead":"We build an ecosystem...","footer.terms":"Terms","footer.privacy":"Privacy","footer.status":"Status","footer.copy":"© 2025 JollyTech. All rights reserved."},
-      de: { "meta.title":"JollyTech — Technologien für die Zukunft","meta.desc":"JollyTech baut ein Ökosystem...","brand":"JollyTech","nav.about":"Über uns","nav.ecosystem":"Ökosystem","nav.share":"JollyShare","nav.world":"The JollyWorld","nav.bots":"JollyBots","nav.contact":"Kontakt","lang.label":"Sprache","hero.title":"JollyTech — Technologien für die <span class='accent'>Zukunft</span>","hero.subtitle":"Intelligente Bots...","hero.ctaPrimary":"Ökosystem erkunden","hero.ctaSecondary":"Mehr erfahren","about.title":"Über JollyTech","about.lead":"Wir bauen ein Ökosystem...","footer.terms":"AGB","footer.privacy":"Datenschutz","footer.status":"Status","footer.copy":"© 2025 JollyTech. Alle Rechte vorbehalten."}
+      bg:{brand:"JollyTech","nav.about":"За нас","nav.ecosystem":"Екосистема","nav.share":"JollyShare","nav.world":"The JollyWorld","nav.bots":"JollyBots","nav.contact":"Контакт","hero.title":"JollyTech — технологии за <span class='accent'>бъдещето</span>","hero.subtitle":"Интелигентни ботове, платформи и виртуални светове. Реални продукти, реална стойност.","hero.ctaPrimary":"Виж екосистемата","hero.ctaSecondary":"Научи повече","about.title":"За JollyTech","about.lead":"Създаваме екосистема...","footer.terms":"Условия","footer.privacy":"Поверителност","footer.status":"Статус","footer.copy":"© 2025 JollyTech. Всички права запазени."},
+      en:{brand:"JollyTech","nav.about":"About","nav.ecosystem":"Ecosystem","nav.share":"JollyShare","nav.world":"The JollyWorld","nav.bots":"JollyBots","nav.contact":"Contact","hero.title":"JollyTech — technologies for the <span class='accent'>future</span>","hero.subtitle":"Intelligent bots, platforms and virtual worlds. Real products, real value.","hero.ctaPrimary":"Explore ecosystem","hero.ctaSecondary":"Learn more","about.title":"About JollyTech","about.lead":"We build an ecosystem...","footer.terms":"Terms","footer.privacy":"Privacy","footer.status":"Status","footer.copy":"© 2025 JollyTech. All rights reserved."},
+      de:{brand:"JollyTech","nav.about":"Über uns","nav.ecosystem":"Ökosystem","nav.share":"JollyShare","nav.world":"The JollyWorld","nav.bots":"JollyBots","nav.contact":"Kontakt","hero.title":"JollyTech — Technologien für die <span class='accent'>Zukunft</span>","hero.subtitle":"Intelligente Bots, Plattformen und virtuelle Welten. Reale Produkte, realer Wert.","hero.ctaPrimary":"Ökosystem erkunden","hero.ctaSecondary":"Mehr erfahren","about.title":"Über JollyTech","about.lead":"Wir bauen ein Ökosystem...","footer.terms":"AGB","footer.privacy":"Datenschutz","footer.status":"Status","footer.copy":"© 2025 JollyTech. Alle Rechte vorbehalten."},
+      es:{brand:"JollyTech","nav.about":"Sobre nosotros","nav.ecosystem":"Ecosistema","nav.share":"JollyShare","nav.world":"The JollyWorld","nav.bots":"JollyBots","nav.contact":"Contacto","hero.title":"JollyTech — tecnologías para el <span class='accent'>futuro</span>","hero.subtitle":"Bots inteligentes, plataformas y mundos virtuales. Productos reales, valor real.","hero.ctaPrimary":"Explorar ecosistema","hero.ctaSecondary":"Aprender más","about.title":"Sobre JollyTech","about.lead":"Construimos un ecosistema...","footer.terms":"Términos","footer.privacy":"Privacidad","footer.status":"Estado","footer.copy":"© 2025 JollyTech. Todos los derechos reservados."},
+      ru:{brand:"JollyTech","nav.about":"О нас","nav.ecosystem":"Экосистема","nav.share":"JollyShare","nav.world":"The JollyWorld","nav.bots":"JollyBots","nav.contact":"Контакт","hero.title":"JollyTech — технологии <span class='accent'>будущего</span>","hero.subtitle":"Интеллектуальные боты, платформы и виртуальные миры. Реальные продукты, реальная ценность.","hero.ctaPrimary":"Посмотреть экосистему","hero.ctaSecondary":"Узнать больше","about.title":"О JollyTech","about.lead":"Мы создаем экосистему...","footer.terms":"Условия","footer.privacy":"Конфиденциальность","footer.status":"Статус","footer.copy":"© 2025 JollyTech. Все права защищены."},
+      tr:{brand:"JollyTech","nav.about":"Hakkımızda","nav.ecosystem":"Ekosistem","nav.share":"JollyShare","nav.world":"The JollyWorld","nav.bots":"JollyBots","nav.contact":"İletişim","hero.title":"JollyTech — <span class='accent'>geleceğin</span> teknolojileri","hero.subtitle":"Akıllı botlar, platformlar ve sanal dünyalar. Gerçek ürünler, gerçek değer.","hero.ctaPrimary":"Ekosistemi keşfet","hero.ctaSecondary":"Daha fazla bilgi","about.title":"JollyTech Hakkında","about.lead":"Bir ekosistem inşa ediyoruz...","footer.terms":"Şartlar","footer.privacy":"Gizlilik","footer.status":"Durum","footer.copy":"© 2025 JollyTech. Tüm hakları saklıdır."},
+      ro:{brand:"JollyTech","nav.about":"Despre noi","nav.ecosystem":"Ecosistem","nav.share":"JollyShare","nav.world":"The JollyWorld","nav.bots":"JollyBots","nav.contact":"Contact","hero.title":"JollyTech — tehnologii pentru <span class='accent'>viitor</span>","hero.subtitle":"Boți inteligenți, platforme și lumi virtuale. Produse reale, valoare reală.","hero.ctaPrimary":"Vezi ecosistemul","hero.ctaSecondary":"Află mai mult","about.title":"Despre JollyTech","about.lead":"Construim un ecosistem...","footer.terms":"Termeni","footer.privacy":"Confidențialitate","footer.status":"Status","footer.copy":"© 2025 JollyTech. Toate drepturile rezervate."},
+      fr:{brand:"JollyTech","nav.about":"À propos","nav.ecosystem":"Écosystème","nav.share":"JollyShare","nav.world":"The JollyWorld","nav.bots":"JollyBots","nav.contact":"Contact","hero.title":"JollyTech — technologies du <span class='accent'>futur</span>","hero.subtitle":"Bots intelligents, plateformes et mondes virtuels. Produits réels, valeur réelle.","hero.ctaPrimary":"Explorer l’écosystème","hero.ctaSecondary":"En savoir plus","about.title":"À propos de JollyTech","about.lead":"Nous construisons un écosystème...","footer.terms":"Conditions","footer.privacy":"Confidentialité","footer.status":"Statut","footer.copy":"© 2025 JollyTech. Tous droits réservés."},
+      cz:{brand:"JollyTech","nav.about":"O nás","nav.ecosystem":"Ekosystém","nav.share":"JollyShare","nav.world":"The JollyWorld","nav.bots":"JollyBots","nav.contact":"Kontakt","hero.title":"JollyTech — technologie <span class='accent'>budoucnosti</span>","hero.subtitle":"Inteligentní boti, platformy a virtuální světy. Skutečné produkty, skutečná hodnota.","hero.ctaPrimary":"Prozkoumat ekosystém","hero.ctaSecondary":"Zjistit více","about.title":"O JollyTech","about.lead":"Budujeme ekosystém...","footer.terms":"Podmínky","footer.privacy":"Soukromí","footer.status":"Stav","footer.copy":"© 2025 JollyTech. Všechna práva vyhrazena."}
     };
     function applyI18n(locale){
-      const dict = I18N[locale]; document.querySelectorAll("[data-i18n]").forEach(el=>{
-        const key=el.getAttribute("data-i18n"); if(dict[key]) el.innerHTML=dict[key];
+      const dict = I18N[locale];
+      document.querySelectorAll("[data-i18n]").forEach(el=>{
+        const key=el.getAttribute("data-i18n");
+        if(dict[key]) el.innerHTML=dict[key];
       });
-      document.title=dict["meta.title"]; document.querySelector("meta[name='description']").setAttribute("content",dict["meta.desc"]);
-      document.documentElement.lang=locale; localStorage.setItem("jt_lang",locale);
+      document.documentElement.lang=locale;
+      localStorage.setItem("jt_lang",locale);
     }
-    const sel=document.getElementById("lang"); const saved=localStorage.getItem("jt_lang")||"bg";
-    sel.value=saved; applyI18n(saved); sel.addEventListener("change",e=>applyI18n(e.target.value));
+    const sel=document.getElementById("lang");
+    const saved=localStorage.getItem("jt_lang")||"bg";
+    sel.value=saved; applyI18n(saved);
+    sel.addEventListener("change",e=>applyI18n(e.target.value));
   </script>
 </body>
 </html>
