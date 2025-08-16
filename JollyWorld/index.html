@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>The JollyWorld — Virtual MMO Universe</title>
+  <meta name="description" content="The JollyWorld — виртуален свят с икономика, роли, събития и Web3 интеграция. Влез, създай герой и започни приключението.">
+  <link rel="canonical" href="https://jollytech.pro/JollyWorld/">
+  <link rel="icon" href="/favicon.ico">
+  <!-- Fonts: Orbitron (HUD), Inter (text) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+
+  <meta property="og:title" content="The JollyWorld — Virtual MMO Universe">
+  <meta property="og:description" content="Виртуален свят с икономика, роли, събития и Web3 интеграция. Влез и играй.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://jollytech.pro/JollyWorld/">
+  <meta property="og:image" content="https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=1600&auto=format&fit=crop">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <style>
+    :root{
+      --bg:#05070c; --panel:#0b1220; --panel2:#0a0f1a;
+      --border:#1a2331; --text:#e8f0ff; --muted:#9fb0c6;
+      --accent:#25e2b9; --accent2:#18c7a3; --ring:rgba(37,226,185,.25);
+      --focus:#3bd5ff; --danger:#ff5c78; --warn:#ffd46f;
+      --hud:#18c7a3; --hud2:#3bd5ff;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0}
+    body{
+      font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;
+      background: radial-gradient(1200px 600px at 70% -10%, rgba(27,146,255,.07), transparent 50%) ,
+                  radial-gradient(1200px 600px at -10% 110%, rgba(37,226,185,.08), transparent 50%),
+                  var(--bg);
+      color:var(--text); line-height:1.6;
+    }
+    a{text-decoration:none;color:inherit}
+    .container{max-width:1200px;margin:0 auto;padding:0 22px}
+
+    /* NAV - Game HUD style */
+    .nav{
+      position:sticky; top:0; z-index:50;
+      background:rgba(6,10,18,.65); backdrop-filter: blur(10px) saturate(140%);
+      border-bottom:1px solid var(--border);
+      box-shadow: inset 0 -1px 0 rgba(255,255,255,.03);
+    }
+    .nav__row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;gap:16px}
+    .brand{display:flex;align-items:center;gap:10px; font-weight:900; letter-spacing:.2px}
+    .logo{
+      width:28px;height:28px;border-radius:8px;
+      background: conic-gradient(from 45deg, var(--accent), #3bd5ff);
+      box-shadow: 0 0 0 6px var(--ring), 0 0 18px rgba(27,146,255,.25);
+    }
+    .brand__title{font-family:Orbitron, sans-serif; letter-spacing:1.2px}
+    .menu{display:flex;gap:22px; align-items:center}
+    .menu a{color:#c9d6ee; font-family:Orbitron, sans-serif; font-size:13px; letter-spacing:.8px}
+    .menu a:hover,.menu a:focus-visible{color:#fff}
+    .actions{display:flex;gap:10px;align-items:center}
+    .btn{
+      display:inline-flex;align-items:center;justify-content:center;
+      padding:10px 16px;border-radius:12px;font-weight:800;border:1px solid transparent;
+      transition:transform .16s ease, background .2s ease, box-shadow .2s ease;
+      font-family:Orbitron, sans-serif; letter-spacing:.8px; font-size:12px;
+    }
+    .btn:hover{transform:translateY(-1px)}
+    .btn--primary{background:linear-gradient(90deg,var(--accent),var(--hud2));color:#071019; box-shadow:0 10px 30px rgba(37,226,185,.25)}
+    .btn--ghost{border-color:var(--border);color:#e8eaee;background:transparent}
+    .btn--ghost:hover{background:#111a29}
+    .hamb{display:none;background:none;border:1px solid var(--border);padding:8px;border-radius:10px}
+    .hamb span{display:block;width:22px;height:2px;background:#cfd6de;margin:4px 0}
+    .hamb:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+
+    /* LANG */
+    .lang{display:flex;align-items:center;gap:8px}
+    .lang label{font-size:13px;color:var(--muted)}
+    .lang select{
+      background:transparent;color:#cfd6de;border:1px solid var(--border);
+      border-radius:10px;padding:8px 10px;cursor:pointer
+    }
+    .lang select:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+
+    /* HUD bar (top game status) */
+    .hud{
+      position:sticky; top:58px; z-index:40;
+      background: linear-gradient(90deg, rgba(24,199,163,.12), rgba(59,213,255,.10));
+      border-bottom:1px solid var(--border);
+      font-family:Orbitron, sans-serif; letter-spacing:.8px; font-size:12px; color:#cde7ff;
+    }
+    .hud__row{display:flex; gap:18px; align-items:center; justify-content:space-between; padding:8px 0}
+    .hud__stats{display:flex; gap:14px; flex-wrap:wrap}
+    .chip{
+      display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border-radius:999px;
+      background: rgba(255,255,255,.04); border:1px solid var(--border)
+    }
+    .bar{position:relative; width:160px; height:8px; border-radius:6px; background:#0f1927; border:1px solid #1b2d45; overflow:hidden}
+    .bar span{position:absolute; inset:0; background:linear-gradient(90deg,var(--hud),var(--hud2)); transform-origin:left; transform:scaleX(.67)}
+    .bar--energy span{transform:scaleX(.45)}
+    .hud__actions{display:flex; gap:10px}
+
+    /* HERO - holo grid */
+    .hero{position:relative; overflow:hidden; padding:96px 0; border-bottom:1px solid var(--border)}
+    .hero__bg{position:absolute; inset:0}
+    .glow{position:absolute; filter:blur(80px); opacity:.5}
+    .glow--1{width:620px; height:620px; border-radius:50%; background:#22d3ee; top:-160px; left:-100px}
+    .glow--2{width:680px; height:680px; border-radius:50%; background:#22e3b3; right:-160px; bottom:-220px}
+    .gridbg{
+      position:absolute; inset:-200px;
+      background-image:linear-gradient(to right, rgba(255,255,255,.04) 1px, transparent 1px),
+                       linear-gradient(to bottom, rgba(255,255,255,.04) 1px, transparent 1px);
+      background-size:42px 42px;
+      mask-image:radial-gradient(closest-side at 50% 40%, rgba(0,0,0,.9), rgba(0,0,0,0));
+    }
+    .hero__content{position:relative; z-index:2; text-align:center}
+    .kicker{font-family:Orbitron,sans-serif; color:#8ee8ff; letter-spacing:1.5px; font-size:12px}
+    .hero h1{font-size:48px; line-height:1.08; margin:6px 0 0}
+    .accent{color:var(--accent)}
+    .sub{margin:12px auto 0; color:var(--muted); max-width:760px}
+    .cta{margin-top:26px; display:flex; gap:12px; justify-content:center; flex-wrap:wrap}
+    .chips{margin-top:18px; display:flex; gap:8px; justify-content:center; flex-wrap:wrap}
+    .chips span{font-size:12px; color:#b8c1cc; background:rgba(255,255,255,.04); border:1px solid var(--border); padding:6px 10px; border-radius:999px}
+
+    /* SECTION */
+    .section{padding:78px 0; border-top:1px solid var(--border); background:var(--panel2)}
+    .section--alt{background:var(--panel)}
+    .section__head{display:flex; flex-direction:column; gap:6px; align-items:flex-start}
+    .section__head h2{margin:0; font-family:Orbitron, sans-serif; letter-spacing:1px}
+    .muted{color:var(--muted)}
+    .max600{max-width:600px}
+
+    /* FEATURES - game ability cards */
+    .features{display:grid; gap:20px; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); margin-top:26px}
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border:1px solid var(--border); border-radius:16px; padding:18px;
+      box-shadow:0 10px 30px rgba(0,0,0,.35); transition:transform .15s;
+      position:relative; overflow:hidden;
+    }
+    .card:hover{transform:translateY(-3px)}
+    .card h3{margin:6px 0 6px; color:#eaf2f7}
+    .badge{font-size:11px; font-family:Orbitron; letter-spacing:.8px; color:#88ffd9}
+    .scan{
+      position:absolute; left:-40%; right:-40%; height:2px; top:0;
+      background: linear-gradient(90deg, transparent, rgba(59,213,255,.6), transparent);
+      animation:scan 4s linear infinite;
+    }
+    @keyframes scan{0%{transform:translateY(-60px)}100%{transform:translateY(280px)}}
+
+    /* GAMEPLAY GRID */
+    .grid-2{display:grid; grid-template-columns:1.1fr .9fr; gap:24px; margin-top:24px}
+    .panel{
+      background:rgba(255,255,255,.03); border:1px solid var(--border); border-radius:16px; padding:18px;
+      box-shadow:0 10px 30px rgba(0,0,0,.35);
+    }
+    .panel h3{margin:0 0 8px; font-family:Orbitron}
+    .panel p{margin:0 0 8px; color:#cfd6de}
+    .mapbox{
+      height:320px; border-radius:12px; border:1px solid var(--border);
+      background-image:linear-gradient(145deg, rgba(37,226,185,.15), rgba(59,213,255,.15)),
+        url('https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=1200&auto=format&fit=crop');
+      background-position:center; background-size:cover;
+      position:relative; overflow:hidden;
+    }
+    .minimap{
+      position:absolute; right:16px; bottom:16px; width:140px; height:100px; border-radius:8px;
+      border:1px solid var(--border); background:rgba(6,10,18,.75); backdrop-filter: blur(6px);
+    }
+    .legend{display:flex; gap:8px; margin-top:10px; flex-wrap:wrap}
+    .legend span{font-size:12px; color:#b8c1cc; border:1px solid var(--border); padding:4px 8px; border-radius:999px; background:rgba(255,255,255,.04)}
+
+    /* QUEST LOG */
+    .quests{display:grid; gap:12px; margin-top:12px}
+    .quest{
+      display:flex; justify-content:space-between; gap:12px; align-items:center;
+      padding:10px 12px; border:1px dashed #26415f; border-radius:12px; background:rgba(13,22,35,.6)
+    }
+    .quest strong{font-family:Orbitron}
+    .progress{height:8px; width:140px; background:#0f1927; border:1px solid #1b2d45; border-radius:6px; position:relative}
+    .progress span{position:absolute; inset:0; background:linear-gradient(90deg,var(--hud),var(--hud2)); transform-origin:left; transform:scaleX(.32); border-radius:6px}
+
+    /* GALLERY */
+    .gallery{display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); margin-top:22px}
+    .shot{
+      height:160px; border-radius:12px; border:1px solid var(--border);
+      background-position:center; background-size:cover; overflow:hidden;
+    }
+    .shot--1{background-image:url('https://images.unsplash.com/photo-1558494949-ef010cbdcc31?q=80&w=1200&auto=format&fit=crop')}
+    .shot--2{background-image:url('https://images.unsplash.com/photo-1535223289827-42f1e9919769?q=80&w=1200&auto=format&fit=crop')}
+    .shot--3{background-image:url('https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=1200&auto=format&fit=crop')}
+    .shot--4{background-image:url('https://images.unsplash.com/photo-1525547719571-a2d4ac8945e2?q=80&w=1200&auto=format&fit=crop')}
+
+    /* FOOTER */
+    .footer{border-top:1px solid var(--border); background:#070c14}
+    .footer__row{display:flex; align-items:center; justify-content:space-between; gap:18px; padding:24px 0; flex-wrap:wrap}
+    .foot-links{display:flex; gap:16px; flex-wrap:wrap}
+    .copy{text-align:center; color:#8e97a3; padding:14px 0; border-top:1px solid var(--border)}
+
+    /* ACCESSIBILITY */
+    a:focus-visible{outline:2px solid var(--focus); outline-offset:2px; border-radius:8px}
+
+    /* RESPONSIVE */
+    @media (max-width:1000px){ .grid-2{grid-template-columns:1fr} }
+    @media (max-width:900px){
+      .menu,.actions{display:none}
+      .hamb{display:inline-flex;flex-direction:column}
+      .hero h1{font-size:38px}
+    }
+    @media (max-width:600px){
+      .hero{padding:78px 0}
+      .hero h1{font-size:32px}
+    }
+  </style>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "VideoGame",
+    "name": "The JollyWorld",
+    "url": "https://jollytech.pro/JollyWorld/",
+    "image": "https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=1600&auto=format&fit=crop",
+    "genre": ["MMO","Simulation","RPG"],
+    "gamePlatform": ["Web"],
+    "operatingSystem": "Any",
+    "author": {
+      "@type":"Organization",
+      "name":"JollyTech"
+    }
+  }
+  </script>
+</head>
+<body>
+
+  <!-- NAV -->
+  <header class="nav" role="banner">
+    <div class="container nav__row">
+      <a class="brand" href="../index.html" aria-label="Back to JollyTech">
+        <span class="logo" aria-hidden="true"></span>
+        <span class="brand__title" data-i18n="brand">JollyTech</span>
+      </a>
+      <nav class="menu" id="menu" aria-label="Main menu">
+        <a href="#gameplay" data-i18n="nav.gameplay">Gameplay</a>
+        <a href="#map" data-i18n="nav.map">Map</a>
+        <a href="#screens" data-i18n="nav.screens">Screens</a>
+        <a href="#roadmap" data-i18n="nav.roadmap">Roadmap</a>
+        <a href="#contact" data-i18n="nav.contact">Contact</a>
+      </nav>
+      <div class="actions" id="actions">
+        <div class="lang">
+          <label for="lang" class="muted" data-i18n="lang.label">Език</label>
+          <select id="lang" aria-label="Language selector">
+            <option value="bg">BG</option>
+            <option value="en">EN</option>
+            <option value="de">DE</option>
+          </select>
+        </div>
+        <a class="btn btn--primary" href="#gameplay" data-i18n="nav.play">ENTER WORLD</a>
+      </div>
+      <button class="hamb" id="hamb" aria-label="Меню" aria-controls="menu" aria-expanded="false"><span></span><span></span><span></span></button>
+    </div>
+  </header>
+
+  <!-- HUD -->
+  <div class="hud" role="status">
+    <div class="container hud__row">
+      <div class="hud__stats">
+        <span class="chip"><strong data-i18n="hud.server">Server</strong>: EU-East</span>
+        <span class="chip"><strong data-i18n="hud.players">Players</strong>: 128</span>
+        <span class="chip"><strong data-i18n="hud.season">Season</strong>: 1</span>
+        <span class="chip"><strong data-i18n="hud.build">Build</strong>: v0.4.2</span>
+      </div>
+      <div class="hud__actions">
+        <span class="chip" title="HP">
+          HP
+          <span class="bar"><span></span></span>
+        </span>
+        <span class="chip" title="Energy">
+          EN
+          <span class="bar bar--energy"><span></span></span>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero__bg" aria-hidden="true">
+      <div class="glow glow--1"></div>
+      <div class="glow glow--2"></div>
+      <div class="gridbg"></div>
+    </div>
+    <div class="container hero__content">
+      <div class="kicker" data-i18n="hero.kicker">HOLO-INTERFACE ONLINE</div>
+      <h1 data-i18n="hero.title">The JollyWorld — <span class="accent">виртуален</span> MMO свят</h1>
+      <p class="sub" data-i18n="hero.subtitle">Създай герой, избери професия и влез в жива икономика, мисии и социални събития. Пълна гласова комуникация, WebRTC обаждания и AI NPC-та.</p>
+      <div class="cta">
+        <a class="btn btn--primary" href="#gameplay" data-i18n="hero.ctaPrimary">Start / Create Character</a>
+        <a class="btn btn--ghost" href="#roadmap" data-i18n="hero.ctaSecondary">View Roadmap</a>
+      </div>
+      <div class="chips" aria-label="Tech">
+        <span>WebRTC</span><span>AI NPC</span><span>Voice-only</span><span>Next.js</span><span>FastAPI</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- GAMEPLAY -->
+  <section id="gameplay" class="section section--alt">
+    <div class="container">
+      <div class="section__head">
+        <h2 data-i18n="gp.title">Gameplay</h2>
+        <p class="muted max600" data-i18n="gp.lead">Роли, професии, мисии и виртуална икономика. Всяко действие влияе на света.</p>
+      </div>
+
+      <div class="features">
+        <article class="card">
+          <div class="scan" aria-hidden="true"></div>
+          <span class="badge" data-i18n="gp.f1.badge">ROLE</span>
+          <h3 data-i18n="gp.f1.title">Професии и умения</h3>
+          <p data-i18n="gp.f1.text">Търговец, разработчик, охрана, медик, шофьор… отключвай перки и надграждай инструменти.</p>
+        </article>
+        <article class="card">
+          <div class="scan"></div>
+          <span class="badge" data-i18n="gp.f2.badge">VOICE</span>
+          <h3 data-i18n="gp.f2.title">Гласови разговори</h3>
+          <p data-i18n="gp.f2.text">Вградени P2P обаждания с WebRTC. Реални разговори между аватари и към AI/NPC услуги.</p>
+        </article>
+        <article class="card">
+          <div class="scan"></div>
+          <span class="badge" data-i18n="gp.f3.badge">ECONOMY</span>
+          <h3 data-i18n="gp.f3.title">Икономика и пазар</h3>
+          <p data-i18n="gp.f3.text">Задачи, заплати, данъци, наеми, търгове и договори. Всичко — в един свързан свят.</p>
+        </article>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel">
+          <h3 data-i18n="gp.panel1.title">Quest Log</h3>
+          <p class="muted" data-i18n="gp.panel1.text">Дневни и седмични мисии. Завършвай, за да отключваш скинове и титли.</p>
+          <div class="quests">
+            <div class="quest">
+              <strong data-i18n="gp.q1.title">Регистрирай нов акаунт</strong>
+              <div class="progress"><span style="transform:scaleX(.9)"></span></div>
+            </div>
+            <div class="quest">
+              <strong data-i18n="gp.q2.title">Първо гласово обаждане</strong>
+              <div class="progress"><span style="transform:scaleX(.35)"></span></div>
+            </div>
+            <div class="quest">
+              <strong data-i18n="gp.q3.title">Сключи договор</strong>
+              <div class="progress"><span style="transform:scaleX(.15)"></span></div>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <h3 data-i18n="gp.panel2.title">World Map</h3>
+          <div class="mapbox" role="img" aria-label="World map preview">
+            <div class="minimap" aria-hidden="true"></div>
+          </div>
+          <div class="legend">
+            <span data-i18n="map.legend.hq">HQ</span>
+            <span data-i18n="map.legend.market">Market</span>
+            <span data-i18n="map.legend.hospital">Hospital</span>
+            <span data-i18n="map.legend.garage">Garage</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAP -->
+  <section id="map" class="section">
+    <div class="container">
+      <div class="section__head">
+        <h2 data-i18n="map.title">Зони и квартали</h2>
+        <p class="muted max600" data-i18n="map.lead">Градски център, индустриална зона, пристанище, предградия, планински комплекс.</p>
+      </div>
+      <div class="features">
+        <article class="card"><span class="badge">ZONE-01</span><h3 data-i18n="map.z1.title">City Core</h3><p data-i18n="map.z1.text">Администрация, банки, HQ, съдилище, централна гара.</p></article>
+        <article class="card"><span class="badge">ZONE-02</span><h3 data-i18n="map.z2.title">Industrial</h3><p data-i18n="map.z2.text">Фабрики, складове, логистика, депа и охрана.</p></article>
+        <article class="card"><span class="badge">ZONE-03</span><h3 data-i18n="map.z3.title">Harbor</h3><p data-i18n="map.z3.text">Пристанище, търговия, митница и ферибот.</p></article>
+        <article class="card"><span class="badge">ZONE-04</span><h3 data-i18n="map.z4.title">Suburbs</h3><p data-i18n="map.z4.text">Жилищни квартали, училища и обществени услуги.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCREENS -->
+  <section id="screens" class="section section--alt">
+    <div class="container">
+      <div class="section__head">
+        <h2 data-i18n="shots.title">Скрийншоти</h2>
+        <p class="muted max600" data-i18n="shots.lead">Първи кадри от интерфейса и града.</p>
+      </div>
+      <div class="gallery">
+        <div class="shot shot--1" role="img" aria-label="UI overview"></div>
+        <div class="shot shot--2" role="img" aria-label="City streets"></div>
+        <div class="shot shot--3" role="img" aria-label="Market screens"></div>
+        <div class="shot shot--4" role="img" aria-label="Industrial zone"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ROADMAP -->
+  <section id="roadmap" class="section">
+    <div class="container">
+      <div class="section__head">
+        <h2 data-i18n="road.title">Roadmap</h2>
+        <p class="muted max600" data-i18n="road.lead">Планирани етапи и приоритети.</p>
+      </div>
+      <div class="features">
+        <article class="card"><span class="badge">Q3</span><h3 data-i18n="road.r1.title">Core Voice & Calls</h3><p data-i18n="road.r1.text">WebRTC, гласови канали, телефонен UI, базови NPC.</p></article>
+        <article class="card"><span class="badge">Q4</span><h3 data-i18n="road.r2.title">Economy & Jobs</h3><p data-i18n="road.r2.text">Договори, заплати, данъци, пазар и мисии.</p></article>
+        <article class="card"><span class="badge">Q1</span><h3 data-i18n="road.r3.title">World Events</h3><p data-i18n="road.r3.text">Сезонни събития, фракции и PVE/PVP активности.</p></article>
+      </div>
+      <div class="cta" style="margin-top:22px">
+        <a class="btn btn--primary" href="#gameplay" data-i18n="road.cta">Join Early Access</a>
+        <a class="btn btn--ghost" href="../JollyBots/index.html" data-i18n="road.cta2">See JollyBots</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer id="contact" class="footer">
+    <div class="container footer__row">
+      <div class="brand"><span class="logo" aria-hidden="true"></span><span data-i18n="brand">JollyTech</span></div>
+      <div class="foot-links">
+        <a href="../index.html" data-i18n="footer.home">Начало</a>
+        <a href="../JollyShare/index.html">JollyShare</a>
+        <a href="../JollyWorld/index.html">The JollyWorld</a>
+        <a href="../JollyBots/index.html">JollyBots</a>
+      </div>
+      <div class="foot-contact"><a href="mailto:support@jollytech.pro">support@jollytech.pro</a></div>
+    </div>
+    <div class="copy" data-i18n="footer.copy">© 2025 JollyTech. Всички права запазени.</div>
+  </footer>
+
+  <script>
+    // --- I18N DICT ---
+    const I18N = {
+      bg: {
+        brand:"JollyTech",
+        "nav.gameplay":"Геймплей","nav.map":"Карта","nav.screens":"Скрийншоти","nav.roadmap":"Roadmap","nav.contact":"Контакт","nav.play":"ENTER WORLD",
+        "lang.label":"Език",
+        "hud.server":"Сървър","hud.players":"ИграчИ","hud.season":"Сезон","hud.build":"Билд",
+        "hero.kicker":"HOLO-INTERFACE ONLINE",
+        "hero.title":"The JollyWorld — <span class=\"accent\">виртуален</span> MMO свят",
+        "hero.subtitle":"Създай герой, избери професия и влез в жива икономика, мисии и социални събития. Пълна гласова комуникация, WebRTC обаждания и AI NPC-та.",
+        "hero.ctaPrimary":"Start / Create Character",
+        "hero.ctaSecondary":"View Roadmap",
+        "gp.title":"Gameplay",
+        "gp.lead":"Роли, професии, мисии и виртуална икономика. Всяко действие влияе на света.",
+        "gp.f1.badge":"ROLE","gp.f1.title":"Професии и умения","gp.f1.text":"Търговец, разработчик, охрана, медик, шофьор… отключвай перки и надграждай инструменти.",
+        "gp.f2.badge":"VOICE","gp.f2.title":"Гласови разговори","gp.f2.text":"Вградени P2P обаждания с WebRTC. Реални разговори между аватари и към AI/NPC услуги.",
+        "gp.f3.badge":"ECONOMY","gp.f3.title":"Икономика и пазар","gp.f3.text":"Задачи, заплати, данъци, наеми, търгове и договори. Всичко — в един свързан свят.",
+        "gp.panel1.title":"Quest Log","gp.panel1.text":"Дневни и седмични мисии. Завършвай, за да отключваш скинове и титли.",
+        "gp.q1.title":"Регистрирай нов акаунт","gp.q2.title":"Първо гласово обаждане","gp.q3.title":"Сключи договор",
+        "gp.panel2.title":"World Map",
+        "map.legend.hq":"Щаб","map.legend.market":"Пазар","map.legend.hospital":"Болница","map.legend.garage":"Гараж",
+        "map.title":"Зони и квартали","map.lead":"Градски център, индустриална зона, пристанище, предградия, планински комплекс.",
+        "map.z1.title":"City Core","map.z1.text":"Администрация, банки, HQ, съдилище, централна гара.",
+        "map.z2.title":"Industrial","map.z2.text":"Фабрики, складове, логистика, депа и охрана.",
+        "map.z3.title":"Harbor","map.z3.text":"Пристанище, търговия, митница и ферибот.",
+        "map.z4.title":"Suburbs","map.z4.text":"Жилищни квартали, училища и обществени услуги.",
+        "shots.title":"Скрийншоти","shots.lead":"Първи кадри от интерфейса и града.",
+        "road.title":"Roadmap","road.lead":"Планирани етапи и приоритети.",
+        "road.r1.title":"Core Voice & Calls","road.r1.text":"WebRTC, гласови канали, телефонен UI, базови NPC.",
+        "road.r2.title":"Economy & Jobs","road.r2.text":"Договори, заплати, данъци, пазар и мисии.",
+        "road.r3.title":"World Events","road.r3.text":"Сезонни събития, фракции и PVE/PVP активности.",
+        "road.cta":"Join Early Access","road.cta2":"Виж JollyBots",
+        "footer.home":"Начало","footer.copy":"© 2025 JollyTech. Всички права запазени."
+      },
+      en: {
+        brand:"JollyTech",
+        "nav.gameplay":"Gameplay","nav.map":"Map","nav.screens":"Screens","nav.roadmap":"Roadmap","nav.contact":"Contact","nav.play":"ENTER WORLD",
+        "lang.label":"Language",
+        "hud.server":"Server","hud.players":"Players","hud.season":"Season","hud.build":"Build",
+        "hero.kicker":"HOLO-INTERFACE ONLINE",
+        "hero.title":"The JollyWorld — <span class=\"accent\">virtual</span> MMO world",
+        "hero.subtitle":"Create a character, pick a profession and join a living economy, quests and social events. Full voice comms, WebRTC calls and AI NPCs.",
+        "hero.ctaPrimary":"Start / Create Character",
+        "hero.ctaSecondary":"View Roadmap",
+        "gp.title":"Gameplay",
+        "gp.lead":"Roles, professions, quests and an in-game economy. Every action shapes the world.",
+        "gp.f1.badge":"ROLE","gp.f1.title":"Professions & skills","gp.f1.text":"Trader, developer, security, medic, driver… unlock perks and upgrade tools.",
+        "gp.f2.badge":"VOICE","gp.f2.title":"Voice calls","gp.f2.text":"Built-in P2P calls with WebRTC. Real calls between avatars and to AI/NPC services.",
+        "gp.f3.badge":"ECONOMY","gp.f3.title":"Economy & market","gp.f3.text":"Tasks, salaries, taxes, rent, auctions and contracts. One connected world.",
+        "gp.panel1.title":"Quest Log","gp.panel1.text":"Daily/weekly quests. Complete to unlock skins and titles.",
+        "gp.q1.title":"Register a new account","gp.q2.title":"Make your first voice call","gp.q3.title":"Sign a contract",
+        "gp.panel2.title":"World Map",
+        "map.legend.hq":"HQ","map.legend.market":"Market","map.legend.hospital":"Hospital","map.legend.garage":"Garage",
+        "map.title":"Zones & districts","map.lead":"City core, industrial zone, harbor, suburbs, mountain resort.",
+        "map.z1.title":"City Core","map.z1.text":"Administration, banks, HQ, courts, central station.",
+        "map.z2.title":"Industrial","map.z2.text":"Factories, warehouses, logistics and security.",
+        "map.z3.title":"Harbor","map.z3.text":"Port, trade, customs and ferry.",
+        "map.z4.title":"Suburbs","map.z4.text":"Residential areas, schools and public services.",
+        "shots.title":"Screenshots","shots.lead":"Early UI and city shots.",
+        "road.title":"Roadmap","road.lead":"Planned phases and priorities.",
+        "road.r1.title":"Core Voice & Calls","road.r1.text":"WebRTC, voice channels, phone UI, basic NPCs.",
+        "road.r2.title":"Economy & Jobs","road.r2.text":"Contracts, salaries, taxes, market and quests.",
+        "road.r3.title":"World Events","road.r3.text":"Seasonal events, factions and PVE/PVP activities.",
+        "road.cta":"Join Early Access","road.cta2":"See JollyBots",
+        "footer.home":"Home","footer.copy":"© 2025 JollyTech. All rights reserved."
+      },
+      de: {
+        brand:"JollyTech",
+        "nav.gameplay":"Gameplay","nav.map":"Karte","nav.screens":"Screens","nav.roadmap":"Roadmap","nav.contact":"Kontakt","nav.play":"ENTER WORLD",
+        "lang.label":"Sprache",
+        "hud.server":"Server","hud.players":"Spieler","hud.season":"Season","hud.build":"Build",
+        "hero.kicker":"HOLO-INTERFACE ONLINE",
+        "hero.title":"The JollyWorld — <span class=\"accent\">virtuelle</span> MMO-Welt",
+        "hero.subtitle":"Erstelle einen Charakter, wähle einen Beruf und tritt einer lebendigen Wirtschaft, Quests und Social Events bei. Voice-Comms, WebRTC-Anrufe und KI-NPCs.",
+        "hero.ctaPrimary":"Start / Charakter erstellen",
+        "hero.ctaSecondary":"Roadmap ansehen",
+        "gp.title":"Gameplay",
+        "gp.lead":"Rollen, Berufe, Quests und eine In-Game-Ökonomie. Jede Aktion formt die Welt.",
+        "gp.f1.badge":"ROLE","gp.f1.title":"Berufe & Skills","gp.f1.text":"Händler, Entwickler, Security, Sanitäter, Fahrer… Perks freischalten und Tools upgraden.",
+        "gp.f2.badge":"VOICE","gp.f2.title":"Sprachanrufe","gp.f2.text":"P2P-Anrufe mit WebRTC. Reale Gespräche zwischen Avataren und KI/NPC-Diensten.",
+        "gp.f3.badge":"ECONOMY","gp.f3.title":"Ökonomie & Markt","gp.f3.text":"Aufgaben, Gehälter, Steuern, Mieten, Auktionen und Verträge.",
+        "gp.panel1.title":"Quest Log","gp.panel1.text":"Tägliche/Wöchentliche Quests. Skins & Titel freischalten.",
+        "gp.q1.title":"Neuen Account registrieren","gp.q2.title":"Ersten Sprachanruf tätigen","gp.q3.title":"Vertrag unterschreiben",
+        "gp.panel2.title":"Weltkarte",
+        "map.legend.hq":"HQ","map.legend.market":"Markt","map.legend.hospital":"Krankenhaus","map.legend.garage":"Garage",
+        "map.title":"Zonen & Bezirke","map.lead":"Innenstadt, Industrie, Hafen, Vororte, Gebirge.",
+        "map.z1.title":"City Core","map.z1.text":"Verwaltung, Banken, HQ, Gerichte, Hauptbahnhof.",
+        "map.z2.title":"Industrial","map.z2.text":"Fabriken, Lager, Logistik, Sicherheit.",
+        "map.z3.title":"Harbor","map.z3.text":"Hafen, Handel, Zoll, Fähre.",
+        "map.z4.title":"Suburbs","map.z4.text":"Wohngebiete, Schulen, öffentliche Dienste.",
+        "shots.title":"Screenshots","shots.lead":"Frühe UI- und City-Shots.",
+        "road.title":"Roadmap","road.lead":"Geplante Phasen und Prioritäten.",
+        "road.r1.title":"Core Voice & Calls","road.r1.text":"WebRTC, Sprachkanäle, Phone-UI, Basis-NPCs.",
+        "road.r2.title":"Economy & Jobs","road.r2.text":"Verträge, Gehälter, Steuern, Markt und Quests.",
+        "road.r3.title":"World Events","road.r3.text":"Season-Events, Fraktionen, PVE/PVP.",
+        "road.cta":"Join Early Access","road.cta2":"JollyBots ansehen",
+        "footer.home":"Startseite","footer.copy":"© 2025 JollyTech. Alle Rechte vorbehalten."
+      }
+    };
+
+    function applyI18n(locale){
+      const dict = I18N[locale] || I18N.bg;
+      document.querySelectorAll("[data-i18n]").forEach(el=>{
+        const key = el.getAttribute("data-i18n");
+        const val = dict[key];
+        if(!val) return;
+        el.innerHTML = val;
+      });
+      document.documentElement.lang = locale;
+      localStorage.setItem("jw_lang", locale);
+    }
+
+    // Mobile меню
+    const hamb = document.getElementById('hamb');
+    const menu = document.getElementById('menu');
+    hamb?.addEventListener('click', () => {
+      const open = menu?.classList.toggle('open');
+      hamb.setAttribute('aria-expanded', open ? 'true' : 'false');
+      if (open) {
+        menu.style.display = 'flex';
+        menu.style.gap = '18px';
+        menu.style.flexDirection = 'column';
+        menu.style.position = 'absolute';
+        menu.style.top = '64px';
+        menu.style.right = '22px';
+        menu.style.background = 'rgba(7,12,20,.98)';
+        menu.style.border = '1px solid #1b2532';
+        menu.style.borderRadius = '12px';
+        menu.style.padding = '12px 14px';
+        menu.style.zIndex = '60';
+      } else {
+        menu.removeAttribute('style');
+      }
+    });
+    // Затваряне при избор на линк (mobile)
+    menu?.querySelectorAll('a').forEach(a=>{
+      a.addEventListener('click', ()=>{
+        if(menu.classList.contains('open')) {
+          menu.classList.remove('open');
+          hamb.setAttribute('aria-expanded','false');
+          menu.removeAttribute('style');
+        }
+      })
+    });
+
+    // Плавно скролиране
+    document.querySelectorAll('a[href^="#"]').forEach(a=>{
+      a.addEventListener('click',e=>{
+        const id=a.getAttribute('href'); const el=id ? document.querySelector(id) : null;
+        if(el){ e.preventDefault(); el.scrollIntoView({behavior:'smooth'}); }
+      });
+    });
+
+    // Език селектор + запазване
+    const sel = document.getElementById("lang");
+    const saved = localStorage.getItem("jw_lang") || "bg";
+    sel.value = saved;
+    applyI18n(saved);
+    sel.addEventListener("change", e => applyI18n(e.target.value));
+  </script>
+</body>
+</html>

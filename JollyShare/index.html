@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>JollyShare — Dashboard</title>
+  <meta name="description" content="JollyShare Dashboard: точки, споделен трафик, ъптайм, реферали и трансфер към JollyWorld."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0a0d10; --panel:#0f1419; --panel-2:#11161c; --text:#e7f3ec; --muted:#9fb3a7;
+      --accent:#27f39a; --accent-2:#14d98a; --danger:#ff5c78; --ok:#2bd4ff; --border:#1b2128;
+      --chip:#0c1116; --shadow:0 10px 30px rgba(0,0,0,.35); --radius:16px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; background:linear-gradient(180deg,#0a0d10 0%, #090c10 100%);
+      color:var(--text); font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;
+      -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+      scroll-behavior:smooth;
+    }
+    a{color:inherit; text-decoration:none}
+    .app{display:grid; grid-template-columns:260px 1fr; min-height:100%}
+    .sidebar{position:sticky; top:0; height:100vh; padding:22px; background:
+      radial-gradient(1200px 600px at -100px -100px, rgba(39,243,154,.08), transparent 60%), var(--panel);
+      border-right:1px solid var(--border); display:flex; flex-direction:column;}
+    .brand{display:flex; align-items:center; gap:10px; font-weight:800}
+    .dot{width:12px; height:12px; border-radius:50%; background:var(--accent); box-shadow:0 0 16px var(--accent)}
+    .nav{margin-top:24px; display:flex; flex-direction:column; gap:6px}
+    .nav a{padding:12px; border-radius:10px; color:var(--muted); border:1px solid transparent}
+    .nav a.active,.nav a:hover{color:var(--text); background:var(--panel-2); border-color:var(--border)}
+    .spacer{flex:1}
+    .chip{display:inline-flex; align-items:center; gap:8px; padding:8px 10px; border-radius:999px;
+      background:var(--chip); border:1px solid var(--border); color:var(--muted); font-size:.85rem;}
+    .main{padding:26px 26px 40px}
+    .top{display:flex; flex-wrap:wrap; gap:18px; align-items:center; justify-content:space-between; margin-bottom:18px;}
+    .breadcrumbs{color:var(--muted)}
+    .btn{background:var(--accent); color:#042319; font-weight:800; padding:10px 14px; border-radius:10px; border:1px solid #062d20; box-shadow:0 0 20px rgba(39,243,154,.25); cursor:pointer}
+    .btn:hover{filter:saturate(1.1)} .btn.ghost{background:transparent; color:var(--text); border:1px solid var(--border)}
+    .btn.danger{background:var(--danger); color:#23040b; border-color:#3a0a16}
+    .grid{display:grid; grid-template-columns:repeat(12,1fr); gap:16px}
+    .card{grid-column:span 3; background:linear-gradient(180deg,#0f151b 0%, #0c1116 100%); border:1px solid var(--border);
+      border-radius:var(--radius); padding:18px; box-shadow:var(--shadow)}
+    .panel{grid-column:span 8; background:linear-gradient(180deg,#0f151b 0%, #0c1116 100%); border:1px solid var(--border);
+      border-radius:var(--radius); padding:18px; box-shadow:var(--shadow)}
+    .side{grid-column:span 4; display:grid; gap:16px}
+    .card h4{margin:0 0 8px; font-size:.95rem; color:var(--muted); font-weight:600}
+    .big{font-size:1.9rem; font-weight:800}
+    .table{width:100%; border-collapse:collapse; font-size:.95rem}
+    .table th,.table td{padding:12px 10px; border-bottom:1px solid var(--border); text-align:left}
+    .mini{display:flex; gap:10px; flex-wrap:wrap}
+    .input, select{width:100%; padding:10px 12px; background:#0c1318; color:var(--text); border:1px solid var(--border); border-radius:10px}
+    .row{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+    .credits{margin-top:18px; color:var(--muted); font-size:.9rem}
+    @media (max-width:1200px){ .card{grid-column:span 6} .panel{grid-column:span 12} .side{grid-column:span 12} }
+    @media (max-width:720px){ .app{grid-template-columns:1fr} .sidebar{position:static; height:auto} .row{grid-template-columns:1fr} }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="brand"><span class="dot"></span><span>JollyShare</span></div>
+      <nav class="nav">
+        <a class="active" href="#top">Dashboard</a>
+        <a href="../index.html">JollyTech</a>
+        <a href="../JollyWorld/index.html">JollyWorld</a>
+        <a href="../JollyBots/index.html">JollyBots</a>
+        <a href="#transfer">Трансфер</a>
+        <a href="#history">История</a>
+      </nav>
+      <div class="spacer"></div>
+      <div class="chip">Нод: <b id="chipNode">Offline</b></div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main" id="top">
+      <div class="top">
+        <div class="breadcrumbs">Екосистема / <b>JollyShare</b></div>
+        <div class="actions">
+          <button class="btn" id="startBtn">Старт нода</button>
+          <button class="btn danger" id="stopBtn" style="display:none">Стоп нода</button>
+          <a class="btn ghost" href="../JollyWorld/index.html">Към JollyWorld</a>
+        </div>
+      </div>
+
+      <section class="grid">
+        <div class="card">
+          <h4>JollyShare точки</h4>
+          <div class="big" id="sharePts">0</div>
+        </div>
+        <div class="card">
+          <h4>JollyWorld точки</h4>
+          <div class="big" id="worldPts">0</div>
+        </div>
+        <div class="card">
+          <h4>Текуща скорост</h4>
+          <div class="big" id="speed">0.0 Mbps</div>
+        </div>
+        <div class="card">
+          <h4>Ъптайм</h4>
+          <div class="big" id="uptime">0%</div>
+        </div>
+
+        <!-- TRANSFER PANEL -->
+        <div class="panel" id="transfer">
+          <h3>Трансфер на точки между JollyShare и JollyWorld</h3>
+          <div class="row" style="margin-top:8px">
+            <div>
+              <label>Посока</label>
+              <select id="direction" class="input">
+                <option value="share_to_world">JollyShare → JollyWorld</option>
+                <option value="world_to_share">JollyWorld → JollyShare</option>
+              </select>
+            </div>
+            <div>
+              <label>Сума (точки)</label>
+              <input type="number" id="amount" class="input" min="1" step="1" placeholder="напр. 100">
+            </div>
+            <div>
+              <label>Бележка (по желание)</label>
+              <input type="text" id="note" class="input" placeholder="причина/описание">
+            </div>
+            <div style="display:flex; align-items:end; gap:10px">
+              <button class="btn" id="transferBtn">Прехвърли</button>
+              <button class="btn ghost" id="maxBtn">MAX</button>
+            </div>
+          </div>
+          <p class="mini" style="margin-top:10px; color:var(--muted)">Трансферът е незабавен и се пази в обща история, видима и в JollyWorld.</p>
+        </div>
+
+        <!-- HISTORY -->
+        <div class="panel" id="history">
+          <h3>История на трансфери</h3>
+          <table class="table">
+            <thead>
+              <tr><th>Дата</th><th>Посока</th><th>Сума</th><th>Бележка</th></tr>
+            </thead>
+            <tbody id="txRows"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <div class="credits">Общи баланси се съхраняват в <code>localStorage</code> (ключ: <b>jollytech_balances_v1</b>).</div>
+    </main>
+  </div>
+
+  <script>
+    // ===== Shared storage (balances) =====
+    const BAL_KEY = 'jollytech_balances_v1';
+    function loadBalances(){
+      const def = { share: 12000, world: 3500, history: [] };
+      try { return JSON.parse(localStorage.getItem(BAL_KEY)) || def; }
+      catch(e){ return def; }
+    }
+    function saveBalances(b){ localStorage.setItem(BAL_KEY, JSON.stringify(b)); }
+
+    // ===== Page state (node sim, speed, uptime kept simple) =====
+    const state = {
+      nodeRunning: false,
+      speed: 0.0,
+      uptime: 0.0,
+      tick: null, speedTick: null
+    };
+
+    // ===== UI refs =====
+    const el = id => document.getElementById(id);
+    const sharePts = el('sharePts');
+    const worldPts = el('worldPts');
+    const chipNode = el('chipNode');
+    const speedEl = el('speed');
+    const uptimeEl = el('uptime');
+    const txRows = el('txRows');
+
+    function render(){
+      const bal = loadBalances();
+      sharePts.textContent = bal.share.toLocaleString('bg-BG');
+      worldPts.textContent = bal.world.toLocaleString('bg-BG');
+      chipNode.textContent = state.nodeRunning ? 'Online' : 'Offline';
+      speedEl.textContent = `${state.speed.toFixed(1)} Mbps`;
+      uptimeEl.textContent = `${state.uptime.toFixed(1)}%`;
+      // history
+      txRows.innerHTML = bal.history.slice().reverse().map(tx=>{
+        const d = new Date(tx.ts);
+        const dir = tx.dir==='share_to_world' ? 'Share → World' : 'World → Share';
+        return `<tr>
+          <td>${d.toLocaleString('bg-BG')}</td>
+          <td>${dir}</td>
+          <td>${tx.amt}</td>
+          <td>${tx.note||''}</td>
+        </tr>`;
+      }).join('');
+    }
+
+    // ===== Transfers =====
+    function doTransfer(dir, amt, note){
+      amt = Math.floor(Number(amt||0));
+      if(!amt || amt<=0) return alert('Въведи валидна сума.');
+      const bal = loadBalances();
+      if(dir==='share_to_world'){
+        if(bal.share<amt) return alert('Недостатъчно точки в JollyShare.');
+        bal.share -= amt; bal.world += amt;
+      } else {
+        if(bal.world<amt) return alert('Недостатъчно точки в JollyWorld.');
+        bal.world -= amt; bal.share += amt;
+      }
+      bal.history.push({ts: Date.now(), dir, amt, note: (note||'').trim()});
+      saveBalances(bal);
+      render();
+    }
+
+    // MAX helper
+    el('maxBtn').addEventListener('click', ()=>{
+      const dir = el('direction').value;
+      const bal = loadBalances();
+      el('amount').value = dir==='share_to_world' ? bal.share : bal.world;
+    });
+
+    el('transferBtn').addEventListener('click', ()=>{
+      doTransfer(el('direction').value, el('amount').value, el('note').value);
+      el('amount').value=''; el('note').value='';
+    });
+
+    // ===== Node simulation (optional eye-candy) =====
+    el('startBtn').addEventListener('click', ()=>{
+      if(state.nodeRunning) return;
+      state.nodeRunning = true; chipNode.textContent='Online';
+      state.speed = 8 + Math.random()*12;
+      state.speedTick = setInterval(()=>{
+        state.speed = Math.max(0.2, state.speed + (Math.random()-0.5)*2);
+        render();
+      }, 1500);
+      state.tick = setInterval(()=>{
+        state.uptime = Math.min(99.9, state.uptime + 0.05);
+        // бонус: капка точки към Share при активен нод
+        const bal = loadBalances();
+        bal.share += 1; // 1 т/сек (демо)
+        if(Math.random()<0.1) bal.history.push({ts: Date.now(), dir:'mined', amt:1, note:'Награда от нод (демо)'});
+        saveBalances(bal);
+        render();
+      }, 1000);
+      render();
+    });
+
+    el('stopBtn').addEventListener('click', ()=>{
+      if(!state.nodeRunning) return;
+      state.nodeRunning = false; chipNode.textContent='Offline';
+      clearInterval(state.tick); clearInterval(state.speedTick);
+      state.tick=null; state.speedTick=null;
+      render();
+    });
+
+    // init
+    render();
+  </script>
+</body>
+</html>

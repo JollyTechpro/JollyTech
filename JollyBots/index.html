@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>JollyBots — AI Trading Bots</title>
+  <meta name="description" content="JollyBots: управлявай Binance/Alpaca ботове, старт/стоп, PnL и настройки."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root{
+      --bg:#0a0d10; --panel:#0f1419; --panel-2:#11161c; --text:#e7f3ec; --muted:#9fb3a7;
+      --accent:#27f39a; --accent-2:#14d98a; --danger:#ff5c78; --warn:#ffcf5c; --border:#1b2128;
+      --chip:#0c1116; --shadow:0 10px 30px rgba(0,0,0,.35); --radius:16px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; background:linear-gradient(180deg,#0a0d10 0%, #090c10 100%);
+      color:var(--text); font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;
+      -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility; scroll-behavior:smooth;
+    }
+    a{color:inherit; text-decoration:none}
+    .app{display:grid; grid-template-columns:260px 1fr; min-height:100%}
+
+    /* Sidebar */
+    .sidebar{
+      position:sticky; top:0; height:100vh; padding:22px;
+      background:radial-gradient(1200px 600px at -100px -100px, rgba(39,243,154,.08), transparent 60%), var(--panel);
+      border-right:1px solid var(--border); display:flex; flex-direction:column;
+    }
+    .brand{display:flex; align-items:center; gap:10px; font-weight:800}
+    .dot{width:12px; height:12px; border-radius:50%; background:var(--accent); box-shadow:0 0 16px var(--accent)}
+    .nav{margin-top:24px; display:flex; flex-direction:column; gap:6px}
+    .nav a{padding:12px; border-radius:10px; color:var(--muted); border:1px solid transparent}
+    .nav a.active,.nav a:hover{color:var(--text); background:var(--panel-2); border-color:var(--border)}
+    .spacer{flex:1}
+    .chip{
+      display:inline-flex; align-items:center; gap:8px; padding:8px 10px; border-radius:999px;
+      background:var(--chip); border:1px solid var(--border); color:var(--muted); font-size:.85rem;
+    }
+    .foot{margin-top:auto; font-size:.85rem; color:var(--muted)}
+
+    /* Main */
+    .main{padding:26px 26px 40px}
+    .top{display:flex; flex-wrap:wrap; gap:12px; align-items:center; justify-content:space-between; margin-bottom:18px}
+    .breadcrumbs{color:var(--muted)}
+    .actions{display:flex; gap:10px; align-items:center}
+    .btn{
+      background:var(--accent); color:#042319; font-weight:800; padding:10px 14px; border-radius:10px;
+      border:1px solid #062d20; box-shadow:0 0 20px rgba(39,243,154,.25); cursor:pointer
+    }
+    .btn:hover{filter:saturate(1.1)}
+    .btn.ghost{background:transparent; color:var(--text); border:1px solid var(--border)}
+    .btn.danger{background:var(--danger); color:#23040b; border-color:#3a0a16}
+    .btn.warn{background:var(--warn); color:#231a04; border-color:#5a4a0a}
+    .btn.small{padding:6px 10px; font-weight:700}
+    .btn.icon{display:inline-flex; align-items:center; gap:8px}
+
+    .grid{display:grid; grid-template-columns:repeat(12,1fr); gap:16px}
+    .panel{
+      grid-column:span 12; background:linear-gradient(180deg,#0f151b 0%, #0c1116 100%);
+      border:1px solid var(--border); border-radius:var(--radius); padding:18px; box-shadow:var(--shadow)
+    }
+    .panel h3{margin:2px 0 14px}
+    .mini{display:flex; gap:10px; flex-wrap:wrap}
+    .tag{display:inline-block; padding:4px 8px; border-radius:999px; background:#0b1217; border:1px solid var(--border); color:var(--muted); font-size:.8rem}
+
+    .toolbar{display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between; margin-bottom:10px}
+    .search{flex:1; min-width:240px}
+    input,select{
+      width:100%; padding:10px 12px; background:#0c1318; color:var(--text); border:1px solid var(--border); border-radius:10px;
+    }
+    .table{width:100%; border-collapse:collapse; font-size:.95rem}
+    .table th,.table td{padding:12px 10px; border-bottom:1px solid var(--border); text-align:left; vertical-align:middle}
+    .table th{color:var(--muted); font-weight:600}
+    .pill{
+      display:inline-flex; gap:8px; align-items:center; padding:6px 10px; border-radius:999px; border:1px solid var(--border); background:#0b1217; color:var(--muted); font-size:.85rem
+    }
+    .status-on{color:var(--accent)} .status-off{color:#777}
+    .pnl-pos{color:var(--accent)} .pnl-neg{color:var(--danger)}
+    .row-actions{display:flex; gap:8px; flex-wrap:wrap}
+
+    .credits{margin-top:18px; color:var(--muted); font-size:.9rem}
+
+    /* Modal */
+    .modal-backdrop{position:fixed; inset:0; background:rgba(0,0,0,.6); display:none; align-items:center; justify-content:center; z-index:50}
+    .modal{
+      width:min(760px,92vw); background:#0b1116; border:1px solid var(--border); border-radius:14px; padding:18px; box-shadow:var(--shadow)
+    }
+    .modal h3{margin:0 0 10px}
+    .row{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+    .row3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px}
+    .modal .actions{display:flex; gap:10px; justify-content:flex-end; margin-top:12px}
+
+    /* Sparkline */
+    .spark{width:100px; height:28px; display:inline-block}
+
+    @media (max-width:1100px){
+      .row,.row3{grid-template-columns:1fr}
+      .app{grid-template-columns:1fr}
+      .sidebar{position:static; height:auto}
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="brand"><span class="dot"></span><span>JollyBots</span></div>
+      <nav class="nav">
+        <a class="active" href="#top" data-i18n="nav_dashboard">Dashboard</a>
+        <a href="../index.html">JollyTech</a>
+        <a href="../JollyShare/index.html">JollyShare</a>
+        <a href="../JollyWorld/index.html">JollyWorld</a>
+        <a href="#bots" data-i18n="nav_bots">Ботове</a>
+        <a href="#settings" data-i18n="nav_settings">Настройки</a>
+      </nav>
+      <div class="spacer"></div>
+      <div class="chip" title="Stripe plan (локален демо чип)">
+        <span data-i18n="plan">План</span>:
+        <b id="planChip">Free</b>
+      </div>
+      <div style="margin-top:10px; display:flex; gap:8px">
+        <select id="langSel" title="Language">
+          <option value="bg">BG</option>
+          <option value="en">EN</option>
+          <option value="de">DE</option>
+        </select>
+        <select id="planSel" title="Plan">
+          <option>Free</option>
+          <option>Beginner</option>
+          <option>Advanced</option>
+          <option>Pro</option>
+        </select>
+      </div>
+      <div class="foot">© 2025 JollyTech</div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main" id="top">
+      <div class="top">
+        <div class="breadcrumbs"><span data-i18n="eco">Екосистема</span> / <b>JollyBots</b></div>
+        <div class="actions">
+          <a class="btn ghost" href="../index.html" title="Назад към JollyTech">← <span data-i18n="back">Връщане към JollyTech</span></a>
+          <button class="btn" id="addBotBtn">+ <span data-i18n="new_bot">Нов бот</span></button>
+          <button class="btn warn" id="startAllBtn" data-i18n="start_all">Start All</button>
+          <button class="btn danger" id="stopAllBtn" data-i18n="stop_all">Stop All</button>
+          <button class="btn ghost small" id="exportBtn" title="Export JSON">↥ Export</button>
+          <label class="btn ghost small" for="importInput" title="Import JSON" style="cursor:pointer">↧ Import</label>
+          <input id="importInput" type="file" accept="application/json" style="display:none" />
+        </div>
+      </div>
+
+      <section class="grid">
+        <!-- SUMMARY -->
+        <div class="panel">
+          <h3 data-i18n="summary">Резюме</h3>
+          <div class="mini">
+            <span class="tag" data-i18n="sum_bots">Общо ботове: <b id="sumBots">0</b></span>
+            <span class="tag" data-i18n="sum_active">Активни: <b id="sumActive">0</b></span>
+            <span class="tag" data-i18n="sum_pnl">PnL (ден): <b id="sumPnlDay">0.00</b></span>
+            <span class="tag" data-i18n="sum_brokers">Брокери: <b id="sumBrokers">—</b></span>
+          </div>
+        </div>
+
+        <!-- BOTS LIST -->
+        <div class="panel" id="bots">
+          <div class="toolbar">
+            <div class="search"><input id="q" placeholder="Търси по име / символ / стратегия..." data-i18n-ph="search_ph"></div>
+            <div style="display:flex; gap:8px">
+              <select id="brokerFilter">
+                <option value="" data-i18n="all_brokers">Всички брокери</option>
+                <option value="Binance">Binance</option>
+                <option value="Alpaca">Alpaca</option>
+              </select>
+              <select id="statusFilter">
+                <option value="" data-i18n="all_statuses">Всички статуси</option>
+                <option value="running" data-i18n="running">Активни</option>
+                <option value="stopped" data-i18n="stopped">Спрени</option>
+              </select>
+            </div>
+          </div>
+
+          <table class="table">
+            <thead>
+              <tr>
+                <th data-i18n="th_bot">Бот</th>
+                <th data-i18n="th_broker">Брокер</th>
+                <th data-i18n="th_strategy">Стратегия</th>
+                <th data-i18n="th_symbol">Символ</th>
+                <th data-i18n="th_mode">Режим</th>
+                <th data-i18n="th_status">Статус</th>
+                <th data-i18n="th_pnl">PnL (ден)</th>
+                <th data-i18n="th_actions">Действия</th>
+              </tr>
+            </thead>
+            <tbody id="botRows"></tbody>
+          </table>
+        </div>
+
+        <!-- SETTINGS -->
+        <div class="panel" id="settings">
+          <h3 data-i18n="settings">Настройки</h3>
+          <div class="mini">
+            <span class="tag" data-i18n="i18n_tag">Мултиезичност: BG/EN/DE</span>
+            <span class="tag" data-i18n="hosting_tag">Хостинг: Vercel + Railway</span>
+            <span class="tag" data-i18n="db_tag">База: PostgreSQL (планирано)</span>
+          </div>
+          <p style="color:var(--muted); margin-top:10px" data-i18n="hint_backend">
+            Този интерфейс е фронтенд прототип. Бекендът (FastAPI) може да получи същите структури чрез REST и да ги съхранява в база.
+          </p>
+        </div>
+      </section>
+
+      <div class="credits" data-i18n="credits">
+        Състоянието се пази локално в <code>localStorage</code> (ключ: <b>jollybots_state_v1</b>). Всички бутони са активни (симулиран режим).
+      </div>
+    </main>
+  </div>
+
+  <!-- ADD/EDIT MODAL -->
+  <div class="modal-backdrop" id="botModal">
+    <div class="modal">
+      <h3 id="modalTitle">Нов бот</h3>
+      <div class="row3" style="margin-bottom:8px">
+        <div>
+          <label data-i18n="f_name">Име на бота</label>
+          <input id="f_name" placeholder="напр. AlphaRSI">
+        </div>
+        <div>
+          <label data-i18n="f_broker">Брокер</label>
+          <select id="f_broker">
+            <option>Binance</option>
+            <option>Alpaca</option>
+          </select>
+        </div>
+        <div>
+          <label data-i18n="f_strategy">Стратегия</label>
+          <input id="f_strategy" placeholder="напр. RSI, Grid, MeanReversion">
+        </div>
+      </div>
+      <div class="row3" style="margin-bottom:8px">
+        <div>
+          <label data-i18n="f_symbol">Символ</label>
+          <input id="f_symbol" placeholder="напр. BTCUSDT / AAPL">
+        </div>
+        <div>
+          <label data-i18n="f_mode">Режим</label>
+          <select id="f_mode">
+            <option>paper</option>
+            <option>live</option>
+          </select>
+        </div>
+        <div>
+          <label data-i18n="f_interval">Интервал</label>
+          <select id="f_interval">
+            <option>1m</option><option>5m</option><option>15m</option><option>1h</option><option>1d</option>
+          </select>
+        </div>
+      </div>
+      <div class="row" style="margin-bottom:8px">
+        <div>
+          <label>API Key</label>
+          <input id="f_apiKey" placeholder="••••••••••••">
+        </div>
+        <div>
+          <label>API Secret</label>
+          <input id="f_apiSecret" placeholder="••••••••••••">
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label data-i18n="f_maxpos">Макс. позиции</label>
+          <input id="f_maxPos" type="number" min="1" step="1" value="3">
+        </div>
+        <div>
+          <label data-i18n="f_equity">Начален капитал (демо)</label>
+          <input id="f_equity" type="number" min="0" step="0.01" value="1000">
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn ghost" id="cancelBtn" data-i18n="cancel">Отказ</button>
+        <button class="btn" id="saveBtn" data-i18n="save">Запази</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOG MODAL -->
+  <div class="modal-backdrop" id="logModal">
+    <div class="modal">
+      <h3 style="margin-bottom:8px" data-i18n="logs_title">Логове на бота</h3>
+      <pre id="logContent" style="max-height:50vh; overflow:auto; background:#060a0e; padding:12px; border-radius:10px; border:1px solid var(--border)"></pre>
+      <div class="actions">
+        <button class="btn ghost" id="logClose" data-i18n="close">Затвори</button>
+        <button class="btn" id="logClear" data-i18n="clear">Изчисти</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ---------- i18n ----------
+    const I18N = {
+      bg:{nav_dashboard:"Dashboard", nav_bots:"Ботове", nav_settings:"Настройки",
+          plan:"План", eco:"Екосистема", back:"Връщане към JollyTech",
+          new_bot:"Нов бот", start_all:"Start All", stop_all:"Stop All",
+          summary:"Резюме", sum_bots:"Общо ботове: ", sum_active:"Активни: ",
+          sum_pnl:"PnL (ден): ", sum_brokers:"Брокери: ",
+          all_brokers:"Всички брокери", all_statuses:"Всички статуси",
+          running:"Активни", stopped:"Спрени",
+          th_bot:"Бот", th_broker:"Брокер", th_strategy:"Стратегия",
+          th_symbol:"Символ", th_mode:"Режим", th_status:"Статус",
+          th_pnl:"PnL (ден)", th_actions:"Действия",
+          settings:"Настройки", i18n_tag:"Мултиезичност: BG/EN/DE",
+          hosting_tag:"Хостинг: Vercel + Railway", db_tag:"База: PostgreSQL (планирано)",
+          hint_backend:"Този интерфейс е фронтенд прототип. Бекендът (FastAPI) може да получи същите структури чрез REST и да ги съхранява в база.",
+          credits:"Състоянието се пази локално в localStorage (ключ: jollybots_state_v1). Всички бутони са активни (симулиран режим).",
+          f_name:"Име на бота", f_broker:"Брокер", f_strategy:"Стратегия", f_symbol:"Символ",
+          f_mode:"Режим", f_interval:"Интервал", f_maxpos:"Макс. позиции", f_equity:"Начален капитал (демо)",
+          cancel:"Отказ", save:"Запази",
+          logs_title:"Логове на бота", close:"Затвори", clear:"Изчисти",
+          search_ph:"Търси по име / символ / стратегия..."
+      },
+      en:{nav_dashboard:"Dashboard", nav_bots:"Bots", nav_settings:"Settings",
+          plan:"Plan", eco:"Ecosystem", back:"Back to JollyTech",
+          new_bot:"New Bot", start_all:"Start All", stop_all:"Stop All",
+          summary:"Summary", sum_bots:"Total bots: ", sum_active:"Active: ",
+          sum_pnl:"PnL (day): ", sum_brokers:"Brokers: ",
+          all_brokers:"All brokers", all_statuses:"All statuses",
+          running:"Running", stopped:"Stopped",
+          th_bot:"Bot", th_broker:"Broker", th_strategy:"Strategy",
+          th_symbol:"Symbol", th_mode:"Mode", th_status:"Status",
+          th_pnl:"PnL (day)", th_actions:"Actions",
+          settings:"Settings", i18n_tag:"Multilanguage: BG/EN/DE",
+          hosting_tag:"Hosting: Vercel + Railway", db_tag:"DB: PostgreSQL (planned)",
+          hint_backend:"Frontend prototype. FastAPI backend can persist the same structures via REST.",
+          credits:"State is kept in localStorage (key: jollybots_state_v1). Buttons work in simulated mode.",
+          f_name:"Bot name", f_broker:"Broker", f_strategy:"Strategy", f_symbol:"Symbol",
+          f_mode:"Mode", f_interval:"Interval", f_maxpos:"Max positions", f_equity:"Initial equity (demo)",
+          cancel:"Cancel", save:"Save",
+          logs_title:"Bot Logs", close:"Close", clear:"Clear",
+          search_ph:"Search by name / symbol / strategy..."
+      },
+      de:{nav_dashboard:"Dashboard", nav_bots:"Bots", nav_settings:"Einstellungen",
+          plan:"Plan", eco:"Ökosystem", back:"Zurück zu JollyTech",
+          new_bot:"Neuer Bot", start_all:"Alle starten", stop_all:"Alle stoppen",
+          summary:"Übersicht", sum_bots:"Bots gesamt: ", sum_active:"Aktiv: ",
+          sum_pnl:"PnL (Tag): ", sum_brokers:"Broker: ",
+          all_brokers:"Alle Broker", all_statuses:"Alle Stati",
+          running:"Aktiv", stopped:"Gestoppt",
+          th_bot:"Bot", th_broker:"Broker", th_strategy:"Strategie",
+          th_symbol:"Symbol", th_mode:"Modus", th_status:"Status",
+          th_pnl:"PnL (Tag)", th_actions:"Aktionen",
+          settings:"Einstellungen", i18n_tag:"Mehrsprachig: BG/EN/DE",
+          hosting_tag:"Hosting: Vercel + Railway", db_tag:"DB: PostgreSQL (geplant)",
+          hint_backend:"Frontend-Prototyp. FastAPI-Backend kann diese Strukturen per REST persistieren.",
+          credits:"Zustand liegt in localStorage (Key: jollybots_state_v1). Buttons im Simulationsmodus.",
+          f_name:"Botname", f_broker:"Broker", f_strategy:"Strategie", f_symbol:"Symbol",
+          f_mode:"Modus", f_interval:"Intervall", f_maxpos:"Max. Positionen", f_equity:"Startkapital (Demo)",
+          cancel:"Abbrechen", save:"Speichern",
+          logs_title:"Bot-Logs", close:"Schließen", clear:"Leeren",
+          search_ph:"Suche nach Name / Symbol / Strategie..."
+      }
+    };
+
+    // ---------- Storage ----------
+    const KEY = 'jollybots_state_v1';
+    const load = () => JSON.parse(localStorage.getItem(KEY) || '{"plan":"Free","lang":"bg","bots":[]}');
+    const save = (s) => localStorage.setItem(KEY, JSON.stringify(s));
+    let state = load();
+
+    // ---------- Helpers ----------
+    const $ = (id)=>document.getElementById(id);
+    const fmt = (n)=>Number(n).toLocaleString(state.lang || 'bg', {maximumFractionDigits:2});
+    const uid = ()=>Math.random().toString(36).slice(2,9);
+    const now = ()=>new Date().toLocaleTimeString();
+
+    // ---------- i18n apply ----------
+    function applyI18n(){
+      const dict = I18N[state.lang] || I18N.bg;
+      document.querySelectorAll('[data-i18n]').forEach(el=>{
+        const k = el.getAttribute('data-i18n');
+        if(k && dict[k]!=null){
+          // special case: some tags contain dynamic numbers after label
+          if(el.classList.contains('tag') && (k==='sum_bots'||k==='sum_active'||k==='sum_pnl'||k==='sum_brokers')){
+            const b = el.querySelector('b'); if(!b) return;
+            el.innerHTML = dict[k] + `<b>${b.textContent}</b>`;
+          } else {
+            el.textContent = dict[k];
+          }
+        }
+      });
+      const ph = document.querySelector('[data-i18n-ph]');
+      if(ph){ ph.placeholder = dict['search_ph']; }
+      // table headers etc handled above
+    }
+
+    // ---------- Render ----------
+    const botRows = $('botRows');
+    function render(){
+      // plan + lang controls
+      $('planChip').textContent = state.plan || 'Free';
+      $('planSel').value = state.plan || 'Free';
+      $('langSel').value = state.lang || 'bg';
+
+      // filters
+      const q = $('q').value.trim().toLowerCase();
+      const fBroker = $('brokerFilter').value;
+      const fStatus = $('statusFilter').value;
+
+      const filtered = state.bots.filter(b=>{
+        const hay = (b.name+' '+b.symbol+' '+b.strategy).toLowerCase();
+        let ok = hay.includes(q);
+        if(fBroker) ok = ok && b.broker===fBroker;
+        if(fStatus==='running') ok = ok && b.running;
+        if(fStatus==='stopped') ok = ok && !b.running;
+        return ok;
+      });
+
+      // summary
+      const active = state.bots.filter(b=>b.running).length;
+      const pnlDay = state.bots.reduce((s,b)=>s+(b.pnlDay||0),0);
+      const brokersSet = new Set(state.bots.map(b=>b.broker).filter(Boolean));
+      $('sumBots').textContent = state.bots.length;
+      $('sumActive').textContent = active;
+      $('sumPnlDay').textContent = fmt(pnlDay);
+      $('sumBrokers').textContent = brokersSet.size ? Array.from(brokersSet).join(', ') : '—';
+
+      // rows
+      botRows.innerHTML = filtered.map(b=>{
+        const statusHTML = b.running
+          ? `<span class="status-on">● ${I18N[state.lang]?.running || 'Активни'}</span>`
+          : `<span class="status-off">● Offline</span>`;
+        const pnlCls = (b.pnlDay||0) >= 0 ? 'pnl-pos' : 'pnl-neg';
+        const cred = b.mode==='live' ? 'LIVE' : 'PAPER';
+        const spark = drawSparkline(b.pnlHist||[]);
+        return `<tr>
+          <td>
+            <div style="font-weight:700">${escapeHtml(b.name||'-')}</div>
+            <div style="color:var(--muted); font-size:.85rem">ID: ${b.id}</div>
+          </td>
+          <td><span class="pill">${b.broker}</span></td>
+          <td>${escapeHtml(b.strategy||'-')}</td>
+          <td>${escapeHtml(b.symbol||'-')}</td>
+          <td><span class="pill">${cred}</span></td>
+          <td>${statusHTML}</td>
+          <td class="${pnlCls}">
+            ${fmt(b.pnlDay||0)}
+            <span class="spark">${spark}</span>
+          </td>
+          <td class="row-actions">
+            <button class="btn ghost small" onclick="toggleRun('${b.id}')">${b.running?'Stop':'Start'}</button>
+            <button class="btn small" onclick="openEdit('${b.id}')">Edit</button>
+            <button class="btn ghost small" onclick="openLogs('${b.id}')">Logs</button>
+            <button class="btn danger small" onclick="delBot('${b.id}')">Delete</button>
+          </td>
+        </tr>`;
+      }).join('');
+      applyI18n();
+      save(state);
+    }
+
+    // ---------- Sparkline (inline SVG) ----------
+    function drawSparkline(arr){
+      if(!arr || arr.length<2) return `<svg width="100" height="28"></svg>`;
+      const w=100, h=28, p=4;
+      const min=Math.min(...arr), max=Math.max(...arr);
+      const rng=(max-min)||1;
+      const pts=arr.map((v,i)=>{
+        const x=p + (i*(w-2*p)/(arr.length-1));
+        const y=h-p - ((v-min)* (h-2*p))/rng;
+        return `${x.toFixed(1)},${y.toFixed(1)}`;
+      }).join(' ');
+      return `<svg width="100" height="28" viewBox="0 0 100 28" preserveAspectRatio="none">
+        <polyline points="${pts}" fill="none" stroke="currentColor" stroke-width="1.5" />
+      </svg>`;
+    }
+
+    // ---------- Bot ops ----------
+    function tickBot(b){
+      // simple random walk for demo + history
+      const drift = (b.mode==='live'?0.6:0.3);
+      const step = (Math.random()-0.5)*2;
+      b.pnlDay = Number((b.pnlDay||0) + step*drift).toFixed(2) * 1;
+      b.pnlHist = (b.pnlHist||[]);
+      b.pnlHist.push(b.pnlDay);
+      if(b.pnlHist.length>40) b.pnlHist.shift();
+      b.logs = b.logs || [];
+      if(Math.random()<0.35){
+        b.logs.push(`[${now()}] ${b.running?'Tick':'Idle'} · ${b.symbol||'-'} · PnL=${b.pnlDay}`);
+        if(b.logs.length>500) b.logs.shift();
+      }
+    }
+
+    function toggleRun(id){
+      const b = state.bots.find(x=>x.id===id);
+      if(!b) return;
+      b.running = !b.running;
+      if(b.running){
+        b._timer && clearInterval(b._timer);
+        b._timer = setInterval(()=>{ tickBot(b); render(); }, 1400);
+        b.logs = b.logs || [];
+        b.logs.push(`[${now()}] START bot ${b.name}`);
+      } else {
+        if(b._timer){ clearInterval(b._timer); b._timer = null; }
+        b.logs = b.logs || [];
+        b.logs.push(`[${now()}] STOP bot ${b.name}`);
+      }
+      render();
+    }
+
+    function openEdit(id){
+      const b = state.bots.find(x=>x.id===id);
+      if(!b) return;
+      $('modalTitle').textContent = (I18N[state.lang]?.new_bot || 'Редакция на бот');
+      $('f_name').value = b.name || '';
+      $('f_broker').value = b.broker || 'Binance';
+      $('f_strategy').value = b.strategy || '';
+      $('f_symbol').value = b.symbol || '';
+      $('f_mode').value = b.mode || 'paper';
+      $('f_interval').value = b.interval || '1m';
+      $('f_apiKey').value = b.apiKey || '';
+      $('f_apiSecret').value = b.apiSecret || '';
+      $('f_maxPos').value = b.maxPos || 3;
+      $('f_equity').value = b.equity ?? 1000;
+      $('botModal').dataset.editId = b.id;
+      $('botModal').style.display='flex';
+    }
+
+    function openLogs(id){
+      const b = state.bots.find(x=>x.id===id);
+      if(!b) return;
+      $('logContent').textContent = (b.logs||[]).join('\n') || '—';
+      $('logModal').dataset.botId = b.id;
+      $('logModal').style.display='flex';
+    }
+
+    function delBot(id){
+      const b = state.bots.find(x=>x.id===id);
+      if(!b) return;
+      if(!confirm(`Изтриване на ${b.name}?`)) return;
+      if(b._timer){ clearInterval(b._timer); }
+      state.bots = state.bots.filter(x=>x.id!==id);
+      render();
+    }
+
+    // ---------- Start/Stop All ----------
+    $('startAllBtn').addEventListener('click', ()=>{
+      if(!state.bots.length) return;
+      if(!confirm('Стартиране на всички ботове?')) return;
+      state.bots.forEach(b=>{ if(!b.running) toggleRun(b.id); });
+    });
+    $('stopAllBtn').addEventListener('click', ()=>{
+      if(!state.bots.length) return;
+      if(!confirm('Спиране на всички ботове?')) return;
+      state.bots.forEach(b=>{ if(b.running) toggleRun(b.id); });
+    });
+
+    // ---------- Add Modal ----------
+    $('addBotBtn').addEventListener('click', ()=>{
+      $('modalTitle').textContent = I18N[state.lang]?.new_bot || 'Нов бот';
+      $('botModal').dataset.editId = '';
+      ['f_name','f_strategy','f_symbol','f_apiKey','f_apiSecret'].forEach(id=>$(id).value='');
+      $('f_broker').value='Binance'; $('f_mode').value='paper'; $('f_interval').value='1m';
+      $('f_maxPos').value=3; $('f_equity').value=1000;
+      $('botModal').style.display='flex';
+    });
+    $('cancelBtn').addEventListener('click', ()=> $('botModal').style.display='none');
+    $('botModal').addEventListener('click', (e)=>{ if(e.target===$('botModal')) $('botModal').style.display='none'; });
+
+    $('saveBtn').addEventListener('click', ()=>{
+      const data = {
+        name: $('f_name').value.trim(),
+        broker: $('f_broker').value,
+        strategy: $('f_strategy').value.trim(),
+        symbol: $('f_symbol').value.trim(),
+        mode: $('f_mode').value,
+        interval: $('f_interval').value,
+        apiKey: $('f_apiKey').value.trim(),
+        apiSecret: $('f_apiSecret').value.trim(),
+        maxPos: Number($('f_maxPos').value||3),
+        equity: Number($('f_equity').value||1000)
+      };
+      if(!data.name) return alert('Въведи име.');
+      const editId = $('botModal').dataset.editId;
+      if(editId){
+        const b = state.bots.find(x=>x.id===editId);
+        Object.assign(b, data);
+      } else {
+        state.bots.push({ id: uid(), pnlDay:0, pnlHist:[0], logs:[`[${now()}] CREATED`], running:false, ...data });
+      }
+      $('botModal').style.display='none';
+      render();
+    });
+
+    // ---------- Filters ----------
+    ['q','brokerFilter','statusFilter'].forEach(id=>{
+      $(id).addEventListener('input', render);
+      $(id).addEventListener('change', render);
+    });
+
+    // ---------- Export / Import ----------
+    $('exportBtn').addEventListener('click', ()=>{
+      const blob = new Blob([JSON.stringify(state,null,2)], {type:'application/json'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `jollybots_state_${Date.now()}.json`;
+      document.body.appendChild(a); a.click(); a.remove();
+    });
+
+    $('importInput').addEventListener('change', (e)=>{
+      const file = e.target.files?.[0]; if(!file) return;
+      const reader = new FileReader();
+      reader.onload = ()=>{
+        try{
+          const data = JSON.parse(reader.result);
+          if(!data || typeof data!=='object') throw new Error();
+          // stop timers from old state
+          (state.bots||[]).forEach(b=>{ if(b._timer) clearInterval(b._timer); });
+          state = { plan: 'Free', lang: 'bg', bots: [], ...data };
+          render();
+          alert('Импортът е успешен.');
+        }catch(err){ alert('Грешен JSON.'); }
+      };
+      reader.readAsText(file);
+      e.target.value = '';
+    });
+
+    // ---------- Lang & Plan ----------
+    $('langSel').addEventListener('change', (e)=>{
+      state.lang = e.target.value; render();
+    });
+    $('planSel').addEventListener('change', (e)=>{
+      state.plan = e.target.value; render();
+    });
+
+    // ---------- Logs modal ----------
+    $('logClose').addEventListener('click', ()=> $('logModal').style.display='none');
+    $('logModal').addEventListener('click', (e)=>{ if(e.target===$('logModal')) $('logModal').style.display='none'; });
+    $('logClear').addEventListener('click', ()=>{
+      const id = $('logModal').dataset.botId;
+      const b = state.bots.find(x=>x.id===id);
+      if(b){ b.logs = []; $('logContent').textContent = '—'; save(state); }
+    });
+
+    // ---------- Utils ----------
+    function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+
+    // ---------- Seed demo (first load) ----------
+    if(!state.bots.length){
+      state.bots = [
+        {id:uid(), name:'AlphaRSI', broker:'Binance', strategy:'RSI', symbol:'BTCUSDT', mode:'paper', interval:'5m', apiKey:'', apiSecret:'', maxPos:3, equity:2000, pnlDay:1.24, pnlHist:[-0.2,0.1,0.5,0.8,1.24], logs:[`[${now()}] CREATED`], running:false},
+        {id:uid(), name:'Gridster', broker:'Binance', strategy:'Grid', symbol:'ETHUSDT', mode:'live', interval:'1m', apiKey:'', apiSecret:'', maxPos:5, equity:5000, pnlDay:-0.85, pnlHist:[0.4,0.2,-0.3,-0.5,-0.85], logs:[`[${now()}] CREATED`], running:false},
+        {id:uid(), name:'MeanMax', broker:'Alpaca', strategy:'MeanReversion', symbol:'AAPL', mode:'paper', interval:'15m', apiKey:'', apiSecret:'', maxPos:2, equity:3000, pnlDay:0.12, pnlHist:[-0.1,0.0,0.05,0.1,0.12], logs:[`[${now()}] CREATED`], running:false},
+      ];
+    }
+
+    // ---------- Init ----------
+    state.lang = state.lang || 'bg';
+    render();
+    applyI18n();
+  </script>
+</body>
+</html>

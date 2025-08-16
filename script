@@ -1,0 +1,29 @@
+// мобилно меню
+const hamb = document.getElementById('hamb');
+const menu = document.getElementById('menu');
+hamb?.addEventListener('click', () => {
+  const open = menu?.classList.toggle('open');
+  if (open) {
+    menu.style.display = 'flex';
+    menu.style.gap = '18px';
+    menu.style.flexDirection = 'column';
+    menu.style.position = 'absolute';
+    menu.style.top = '64px';
+    menu.style.right = '22px';
+    menu.style.background = 'rgba(10,16,23,.96)';
+    menu.style.border = '1px solid #1b2532';
+    menu.style.borderRadius = '12px';
+    menu.style.padding = '12px 14px';
+  } else {
+    menu.removeAttribute('style');
+  }
+});
+
+// плавно скролиране
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click',e=>{
+    const id=a.getAttribute('href');
+    const el=document.querySelector(id);
+    if(el){ e.preventDefault(); el.scrollIntoView({behavior:'smooth'}); }
+  });
+});
